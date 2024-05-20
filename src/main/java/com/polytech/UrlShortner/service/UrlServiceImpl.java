@@ -2,8 +2,9 @@ package com.polytech.UrlShortner.service;
 
 import com.google.common.hash.Hashing;
 import com.polytech.UrlShortner.model.Url;
-import com.polytech.UrlShortner.model.UrlDto;
+import com.polytech.UrlShortner.dto.UrlDto;
 import com.polytech.UrlShortner.repository.UrlRepository;
+import com.polytech.UrlShortner.util.Convertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,25 +16,17 @@ import java.time.LocalDateTime;
 @Component
 public class UrlServiceImpl implements UrlService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UrlServiceImpl.class);
-
     @Autowired
     private UrlRepository urlRepository;
 
     @Override
     public Url generateShortLink(UrlDto urlDto) {
+        Url url =  Convertor.convert(urlDto,Url.class);
+        url.setShortLink(encodeUrl(url.getOriginalUrl()));
+        url.setCreationDate(LocalDateTime.now());
+        urlRepository.save(url);
 
-        if(!urlDto.getUrl().isEmpty())
-        {
-            String encodedUrl = encodeUrl(urlDto.getUrl());
-            Url urlToPersist = new Url();
-            urlToPersist.setCreationDate(LocalDateTime.now());
-            urlToPersist.setOriginalUrl(urlDto.getUrl());
-            urlToPersist.setShortLink(encodedUrl);
-            persistShortLink(urlToPersist);
-            return urlToPersist;
-        }
-        return null;
+        return url;
     }
 
     private String encodeUrl(String url)
@@ -46,10 +39,7 @@ public class UrlServiceImpl implements UrlService {
         return encodedUrl;
     }
 
-    @Override
-    public void persistShortLink(Url url) {
-        urlRepository.save(url);
-    }
+
 
     @Override
     public Url getEncodedUrl(String url) {
@@ -57,8 +47,4 @@ public class UrlServiceImpl implements UrlService {
         return urlToRet;
     }
 
-    @Override
-    public void deleteShortLink(Url url) {
-        urlRepository.delete(url);
-    }
 }
