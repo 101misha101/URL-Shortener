@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class UrlServiceImpl implements UrlService {
@@ -43,8 +44,12 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public Url getEncodedUrl(String url) {
-        Url urlToRet = urlRepository.findByShortLink(url);
+        Url urlToRet = urlRepository.findByShortLink(url).get();
         return urlToRet;
     }
+
+
+
+
 
 }

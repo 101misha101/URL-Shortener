@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +18,8 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "originalUrl")
+    @URL(message = "Invalid URL")
+    @NotBlank(message = "URL cannot be blank")
     private String originalUrl;
 
     @Column(name = "shortLink")
